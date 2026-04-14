@@ -23,16 +23,15 @@ class PasswordManager:
 
     def add(self, entry_object):  # entry_object is whatever gets passed into this method
         self.saved_entries[entry_object.site] = {
-            'Site: ': entry_object.site,
-            'Username: ': entry_object.username,
-            'Password: ': entry_object.password
+            'username': entry_object.username,
+            'password': entry_object.password
         } #this is adding the imputs into the directory 
 
         # print(entry_object)
         # print(type(self.saved_entries))
         return entry_object
     
-    def isDuplicate(self, site_name):
+    def is_duplicate(self, site_name):
         if site_name in self.saved_entries:
             return True
         else: 
@@ -42,22 +41,22 @@ class PasswordManager:
         if site_to_find in self.saved_entries: #looking for the site in the dictionary
             print(f'Entry for {site_to_find} Found!')
             details = self.saved_entries[site_to_find]  #prying feilds that are not site
-            print(f"Username: {details['Username: ']}") #this is how we are accessing the 2 different feilds 
-            print(f"Password: {details['Password: ']}")
+            print(f"Username: {details['username']}") #this is how we are accessing the 2 different feilds 
+            print(f"Password: {details['password']}")
         else:
             print('entry not found')
     
     def delete(self, site_to_delete):
         while True:
-            questionDelete = input('Are you sure you want to delete, Y/N').capitalize()
-            if questionDelete == 'Y':
+            question_delete = input('Are you sure you want to delete, Y/N').capitalize()
+            if question_delete == 'Y':
                 if site_to_delete in self.saved_entries: 
                     del self.saved_entries[site_to_delete]
                     print(f"The Entry for the site {site_to_delete} has been deleted ")
                     break
                 else:
                     print('entry not found')
-            elif questionDelete =='N': 
+            elif question_delete =='N': 
                 print('Goodbye')
                 break
             else: 
@@ -75,7 +74,7 @@ class PasswordManager:
         with open('info.json', 'w') as i: # writing to the json file
             json.dump(self.saved_entries,i) # dump 
             
-    def listAll(self):
+    def list_all(self):
         for i in self.saved_entries:
             print(i)
         
@@ -89,13 +88,16 @@ def add_entry(manager):
             else: 
                 print('Feild cannot be empty')
             
-        if manager.isDuplicate(site_name):
+        if manager.is_duplicate(site_name):
             while True:
                 overwrite = input(f'{site_name} found, would you like to overwrite: Y/N').capitalize()
                 if overwrite != '':
                     if overwrite == 'N':
                         return
-                    break
+                    elif overwrite == 'Y':
+                        break
+                    else: 
+                        print(f'"{overwrite}" is not an option please try again')
                 else: 
                     print('feild cannot be empty')
         
@@ -143,14 +145,14 @@ def menu():
             sys.exit()
             
         elif menu_choice == '5':
-            Other_Menu = input('1. List all sites, 2. Change master password')
-            if Other_Menu == '1':    
-                manager.listAll()
+            other_menu = input('1. List all sites, 2. Change master password')
+            if other_menu == '1':    
+                manager.list_all()
                 
-            elif Other_Menu =='2':
-                changePass()
+            elif other_menu =='2':
+                change_password()
             
-def changePass():
+def change_password():
         old_pass = input('What is the old password: ')
         old_pass = hash_da_pass(old_pass)
         with open('master_pass.txt', 'r') as i:
