@@ -34,8 +34,6 @@ class PasswordManager:
     def is_duplicate(self, site_name):
         if site_name in self.saved_entries:
             return True
-        else: 
-            return False 
 
     def search(self, site_to_find):
         if site_to_find in self.saved_entries: #looking for the site in the dictionary
@@ -78,15 +76,21 @@ class PasswordManager:
         for i in self.saved_entries:
             print(i)
         
+
+def not_empty(feild_to_check):
+    while True: 
+        if feild_to_check != '':
+            return feild_to_check
+            break 
+        else: 
+           feild_to_check = input('Feild cannot be empty, please try again')
+           continue
     
 def add_entry(manager):
     
-        while True: 
-            site_name = input('please enter the site you want to enter the information for:').capitalize() 
-            if site_name != '':
-                break 
-            else: 
-                print('Feild cannot be empty')
+        
+        site_name = input('please enter the site you want to enter the information for:').capitalize() 
+        site_name = not_empty(site_name)
             
         if manager.is_duplicate(site_name):
             while True:
@@ -101,19 +105,12 @@ def add_entry(manager):
                 else: 
                     print('feild cannot be empty')
         
-        while True: 
-            user_name = input(f'please enter the username for {site_name} : ')
-            if user_name != '':
-                break 
-            else: 
-                print('Feild cannot be empty')
+      
+        user_name = input(f'please enter the username for {site_name} : ')
+        user_name = not_empty(user_name)
                 
-        while True: 
-            user_password = input(f'please enter the password for {site_name} : ')
-            if user_password != '':
-                break 
-            else: 
-                print('Feild cannot be empty')
+        user_password = input(f'please enter the password for {site_name} : ')
+        user_password = not_empty(user_password)
         
         new_entry = PasswordEntry(site_name, user_name, user_password)
         manager.add(new_entry)
