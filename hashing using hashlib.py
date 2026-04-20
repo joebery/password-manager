@@ -6,7 +6,6 @@ Created on Wed Apr  1 16:29:17 2026
 """
 import json 
 import sys
-import time
 import hashlib
 
 class PasswordEntry:  # Class that stores one password entry
@@ -33,38 +32,30 @@ class PasswordManager:
     
     def is_duplicate(self, site_name):
         if site_name in self.saved_entries:
-            return True
+            return True 
+        else: 
+            return False
 
     def search(self, site_to_find):
         if site_to_find in self.saved_entries: #looking for the site in the dictionary
             print(f'Entry for {site_to_find} Found!')
-            details = self.saved_entries[site_to_find]  #prying feilds that are not site
-            print(f"Username: {details['username']}") #this is how we are accessing the 2 different feilds 
+            details = self.saved_entries[site_to_find]  #prying fields that are not site
+            print(f"Username: {details['username']}") #this is how we are accessing the 2 different fields 
             print(f"Password: {details['password']}")
         else:
             print('entry not found')
     
     def delete(self, site_to_delete):
-        while True:
-            question_delete = input('Are you sure you want to delete, Y/N').capitalize()
-            if question_delete == 'Y':
-                if site_to_delete in self.saved_entries: 
-                    del self.saved_entries[site_to_delete]
-                    print(f"The Entry for the site {site_to_delete} has been deleted ")
-                    break
-                else:
-                    print('entry not found')
-            elif question_delete =='N': 
-                print('Goodbye')
-                break
-            else: 
-                print('That was not an option Please try again')
+        if site_to_delete in self.saved_entries: 
+            del self.saved_entries[site_to_delete]
+    
+                    
                    
     def load(self): #function of loading the dictionary 
         try:
             with open('info.json', 'r') as i: #reading the file 
                 self.saved_entries = json.load(i) #this loads the json file into a dict
-        except:
+        except json.JSONDecodeError:
                 with open("info.json", "w") as i: #creates the json file 
                     self.saved_entries={} # creates an empty dict 
                 
@@ -77,21 +68,20 @@ class PasswordManager:
             print(i)
         
 
-def not_empty(feild_to_check):
+def not_empty(field_to_check):
     while True: 
-        if feild_to_check != '':
-            return feild_to_check
+        if field_to_check != '':
+            return field_to_check
             break 
         else: 
-           feild_to_check = input('Feild cannot be empty, please try again')
+           field_to_check = input('field cannot be empty, please try again')
            continue
     
 def add_entry(manager):
     
         
         site_name = input('please enter the site you want to enter the information for:').capitalize() 
-        site_name = not_empty(site_name)
-            
+        site_name = not_empty(site_name)           
         if manager.is_duplicate(site_name):
             while True:
                 overwrite = input(f'{site_name} found, would you like to overwrite: Y/N').capitalize()
@@ -103,7 +93,7 @@ def add_entry(manager):
                     else: 
                         print(f'"{overwrite}" is not an option please try again')
                 else: 
-                    print('feild cannot be empty')
+                    print('field cannot be empty')
         
       
         user_name = input(f'please enter the username for {site_name} : ')
@@ -129,15 +119,30 @@ def menu():
         if menu_choice == '1':
            add_entry(manager)
         
+        
         elif menu_choice == '2':
             site_to_find = input('what site would you like to search for: ').capitalize() 
             manager.search(site_to_find)
     
+    
         elif menu_choice == '3':
             site_to_delete = input('what site would you like to delete: ').capitalize() 
-            manager.delete(site_to_delete)
-            manager.save()
-    
+            if manager.is_duplicate(site_to_delete): #if true continue to ask user if they want to delete 
+                while True:
+                    question_delete = input('Are you sure you want to delete, Y/N').capitalize()
+                    if question_delete =='Y':  
+                        manager.delete(site_to_delete)
+                        print(f"The Entry for the site {site_to_delete} has been deleted ")
+                        manager.save()
+                        break
+                    elif question_delete == 'N':
+                        break
+                    else: 
+                        print(f'{question_delete} is not an option, please try again')
+            else:
+                print(f'{site_to_delete} does not exist')
+                
+                
         elif menu_choice == '4':
             sys.exit()
             
@@ -160,7 +165,6 @@ def change_password():
                     with open("master_pass.txt", "w") as i: #creates the json file
                         i.write(hash_da_pass(new_pass))
                         print('password changed sucsessfully')
-                        menu()
                 else: print('Passwords dont match')
             else: print('wrong password')
                 
