@@ -38,4 +38,10 @@ def cyrpt(password):
     
     
     
-cyrpt(input('enter password: ').encode()) # Encode since Fernet takes only bytes
+cyrpt({input('enter password: ')}.encode()) # Encode since Fernet takes only bytes
+
+
+"""
+
+so what i need to do for the main program 
+"""

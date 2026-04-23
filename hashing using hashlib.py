@@ -7,34 +7,85 @@ Created on Wed Apr  1 16:29:17 2026
 import json 
 import sys
 import hashlib
+from cryptography.fernet import Fernet
+
 
 class PasswordEntry:  # Class that stores one password entry
     def __init__(self, site_name, user_name, user_password):
         self.site = site_name
         self.username = user_name
         self.password = user_password
-
-
+        
+        
 class PasswordManager:
     def __init__(self):
         self.saved_entries = {}  # Dictionary where entries are stored
         
-
-    def add(self, entry_object):  # entry_object is whatever gets passed into this method
-        self.saved_entries[entry_object.site] = {
-            'username': entry_object.username,
-            'password': entry_object.password
-        } #this is adding the imputs into the directory 
-
-        # print(entry_object)
-        # print(type(self.saved_entries))
-        return entry_object
+    """########################################################################
+                                ENCRYPTION STUFF
+    ########################################################################"""
+    def cyrpt_key(self):
+        try: 
+            with open("Fernet.bin" , 'rb') as p:
+                self.key = p.read()
+                print('key found')
+        except FileNotFoundError:
+            # print('key not found')
+            with open("Fernet.bin", "wb") as f:
+                self.key = Fernet.generate_key() # Generating a brand new key 
+                # Key = the secret 
+                f.write(self.key) # Adds to the file 
+        return self.key
+        
+     
+         
+    def encrypt(self, password):
+        cipher = Fernet(self.key)
+        encrypted = cipher.encrypt(password)# Encrypting the password 
+        return encrypted
+    
+    """########################################################################
+                                APPLICATION FUNCTIONS
+    ########################################################################"""
+    
     
     def is_duplicate(self, site_name):
         if site_name in self.saved_entries:
             return True 
         else: 
             return False
+        
+    def load(self): #function of loading the dictionary 
+        try:
+            with open('info.json', 'r') as i: #reading the file 
+                self.saved_entries = json.load(i) #this loads the json file into a dict
+        except json.JSONDecodeError:
+                with open("info.json", "w") as i: #creates the json file 
+                    self.saved_entries={} # creates an empty dict 
+                
+    def save(self):
+        
+        with open('info.json', 'w') as i: # writing to the json file
+            json.dump(self.saved_entries,i) # dump 
+            
+    def list_all(self):
+        for i in self.saved_entries:
+            print(i)
+                
+            
+    """########################################################################
+                                    USER FUNCTIONS
+    ########################################################################"""
+        
+    
+    def add(self, entry_object):  # entry_object is whatever gets passed into this method
+        self.saved_entries[entry_object.site] = {
+            'username': entry_object.username,
+            'password': entry_object.password
+        } #this is adding the imputs into the directory 
+        # print(entry_object)
+        # print(type(self.saved_entries))
+        return entry_object
 
     def search(self, site_to_find):
         if site_to_find in self.saved_entries: #looking for the site in the dictionary
@@ -49,25 +100,7 @@ class PasswordManager:
         if site_to_delete in self.saved_entries: 
             del self.saved_entries[site_to_delete]
     
-                    
-                   
-    def load(self): #function of loading the dictionary 
-        try:
-            with open('info.json', 'r') as i: #reading the file 
-                self.saved_entries = json.load(i) #this loads the json file into a dict
-        except json.JSONDecodeError:
-                with open("info.json", "w") as i: #creates the json file 
-                    self.saved_entries={} # creates an empty dict 
-                
-    def save(self):
-        with open('info.json', 'w') as i: # writing to the json file
-            json.dump(self.saved_entries,i) # dump 
-            
-    def list_all(self):
-        for i in self.saved_entries:
-            print(i)
-        
-
+    
 def not_empty(field_to_check):
     while True: 
         if field_to_check != '':
@@ -101,8 +134,9 @@ def add_entry(manager):
                 
         user_password = input(f'please enter the password for {site_name} : ')
         user_password = not_empty(user_password)
+        encrypted_user_password= manager.encrypt(user_password)
         
-        new_entry = PasswordEntry(site_name, user_name, user_password)
+        new_entry = PasswordEntry(site_name, user_name, encrypted_user_password)
         manager.add(new_entry)
         manager.save()
     
@@ -110,8 +144,10 @@ def add_entry(manager):
           
         
 def menu():
+    
     run_menu = 1
     manager = PasswordManager()
+    manager.cyrpt_key()
     manager.load()
     while run_menu == 1:  # Loop allows user tow keep using the program
         menu_choice = input('what would you like to do today 1. ADD 2. SEARCH, 3. DELETE, 4.QUIT:, 5.Other ')
@@ -154,7 +190,7 @@ def menu():
             elif other_menu =='2':
                 change_password()
             
-def change_password():
+def change_password(): 
         old_pass = input('What is the old password: ')
         old_pass = hash_da_pass(old_pass)
         with open('master_pass.txt', 'r') as i:
@@ -196,13 +232,15 @@ def auth():
             
 def hash_da_pass(password):
     return hashlib.sha3_256(password.encode()).hexdigest()
-    
-             
+
 
     
-
-# manager = PasswordManager()
+"""###########################################################################
+                                    MAIN
+###########################################################################"""
+# manager = PasswordManager()r
 # manager.load()
-        
+      
 auth()
+
         
