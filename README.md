@@ -59,6 +59,10 @@ password-manager/
 ├── hashing using hashlib.py   # main application file
 ├── info.json                  # encrypted password store (auto generated)
 └── master_pass.txt            # hashed master password (auto generated)
+└── README.MD                  # This document
+└── Fernet.bin                 # encryption key storage (auto generated)
+Experiements/                  # folder for trying out new technologies before adding them into the code
+└── #see contents# 
 ```
 
 ---
@@ -68,7 +72,7 @@ password-manager/
 - The master password is hashed using SHA3-256 and never stored in plain text
 - Site passwords are currently stored in plain text in `info.json`
 - Do not share or commit `info.json` or `master_pass.txt` to a public repository
-- Future improvement: encrypt stored passwords using the `cryptography` library
+- Current improvement: encrypt stored passwords using the `cryptography` library
 
 ---
 
@@ -89,12 +93,12 @@ This project was built while learning the following Python concepts:
 
 ## Planned improvements
 
-- Password encryption using the `cryptography` library
 - Password generator using the `secrets` module
 - Copy password to clipboard using `pyperclip`
 - Case insensitive search
 - Edit existing entries
 - Change master password
+- GUI interface
 
 ---
 
