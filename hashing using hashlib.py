@@ -41,8 +41,14 @@ class PasswordManager:
          
     def encrypt(self, password):
         cipher = Fernet(self.key)
+ 
         encrypted = cipher.encrypt(password)# Encrypting the password 
         return encrypted
+    
+    def decrypt(self, encrypted):
+        cipher = Fernet(self.key)
+        decrypted = cipher.decrypt(encrypted)# decrypting the password 
+        return decrypted
     
     """########################################################################
                                 APPLICATION FUNCTIONS
@@ -134,7 +140,7 @@ def add_entry(manager):
                 
         user_password = input(f'please enter the password for {site_name} : ')
         user_password = not_empty(user_password)
-        encrypted_user_password= manager.encrypt(user_password)
+        encrypted_user_password= manager.encrypt(user_password.encode()).decode()
         
         new_entry = PasswordEntry(site_name, user_name, encrypted_user_password)
         manager.add(new_entry)
