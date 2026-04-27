@@ -8,6 +8,8 @@ import json
 import sys
 import hashlib
 from cryptography.fernet import Fernet
+import string
+import secrets
 
 
 class PasswordEntry:  # Class that stores one password entry
@@ -98,7 +100,7 @@ class PasswordManager:
             print(f'Entry for {site_to_find} Found!')
             details = self.saved_entries[site_to_find]  #prying fields that are not site
             print(f"Username: {details['username']}") #this is how we are accessing the 2 different fields 
-            password = self.decrypt(details['password']).decode()###################################################################################
+            password = self.decrypt(details['password'].encode()).decode()###################################################################################
             print(f"Password: {password}")
         else:
             print('entry not found')
@@ -190,12 +192,55 @@ def menu():
             sys.exit()
             
         elif menu_choice == '5':
-            other_menu = input('1. List all sites, 2. Change master password')
+            other_menu = input('1. List all sites, 2. Change master password 3. Add using random password')
             if other_menu == '1':    
                 manager.list_all()
                 
             elif other_menu =='2':
                 change_password()
+                
+                
+            elif other_menu == '3': 
+                site_name = input('please enter the site you want to enter the information for:').capitalize() 
+                site_name = not_empty(site_name)           
+                if manager.is_duplicate(site_name):
+                    while True:
+                        overwrite = input(f'{site_name} found, would you like to overwrite: Y/N').capitalize()
+                        if overwrite != '':
+                            if overwrite == 'N':
+                                return
+                            elif overwrite == 'Y':
+                                break
+                            else: 
+                                print(f'"{overwrite}" is not an option please try again')
+                        else: 
+                            print('field cannot be empty')
+                
+              
+                user_name = input(f'please enter the username for {site_name} : ')
+                user_name = not_empty(user_name)
+                        
+                alphabet = string.ascii_letters + string.digits
+                while True:
+                    user_password = ''.join(secrets.choice(alphabet) for i in range(15))
+                    if (any(c.islower() for c in user_password)
+                            and any(c.isupper() for c in user_password)
+                            and sum(c.isdigit() for c in user_password) >=3):
+                        break
+                    
+                print(f'Your Password is {user_password}')
+                    
+                user_password = not_empty(user_password)
+                encrypted_user_password= manager.encrypt(user_password.encode()).decode()
+                
+                new_entry = PasswordEntry(site_name, user_name, encrypted_user_password)
+                manager.add(new_entry)
+                manager.save()
+                
+                
+                
+                
+               
             
 def change_password(): 
         old_pass = input('What is the old password: ')
