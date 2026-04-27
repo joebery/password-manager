@@ -98,7 +98,8 @@ class PasswordManager:
             print(f'Entry for {site_to_find} Found!')
             details = self.saved_entries[site_to_find]  #prying fields that are not site
             print(f"Username: {details['username']}") #this is how we are accessing the 2 different fields 
-            print(f"Password: {details['password']}")
+            password = self.decrypt(details['password']).decode()###################################################################################
+            print(f"Password: {password}")
         else:
             print('entry not found')
     
