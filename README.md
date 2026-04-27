@@ -70,7 +70,7 @@ Experiements/                  # folder for trying out new technologies before a
 ## Security notes
 
 - The master password is hashed using SHA3-256 and never stored in plain text
-- Site passwords are currently stored in plain text in `info.json`
+- Site passwords are currently stored in encrypted text in `info.json`
 - Do not share or commit `info.json` or `master_pass.txt` to a public repository
 - Current improvement: encrypt stored passwords using the `cryptography` library
 
