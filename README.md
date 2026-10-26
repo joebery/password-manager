@@ -58,8 +58,5 @@ This project is a terminal-based password manager that allows users to securely 
 +---------------------+
 ```
 
-## 🤝 Contributing
-Contributions are welcome! Please open an issue or submit a pull request with your proposed changes.
-
 ## 📄 License
-This project is licensed under the MIT License. Please see the LICENSE file for details.
+This project is licensed under the MIT License
